@@ -1,3 +1,6 @@
 # INF5750
 
-Lana tester git :)
+Saliq
+Martin
+Inthu
+Lana
