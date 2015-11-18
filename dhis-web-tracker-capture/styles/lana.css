@@ -52,5 +52,20 @@ body{
     color: #fff;
 }
 .annen-container {
-	margin-top: 10px;
+	margin-top: 5px;
+	padding: 70px;
+}
+
+#info {
+    padding: 0px;
+    margin-left: 15px;
+}
+
+.profile-avatar{
+    margin-top: 20px;
+}
+
+.bs-glyphicons-list{
+    margin-top:20px;
+    float:right;
 }
