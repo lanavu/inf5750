@@ -1,0 +1,13 @@
+Jeg har lagt til endringer i components/dataentry/default-form.html
+
+Det er her vi skal legge inn ny kode. 
+
+Vi må finne ut av hvordan en "report" identifiseres slik at vi kan hente ut den forrige rapporten dersom den finnes.
+
+Dette kan kanskje finnes ut av gjennom dataentry-mappen eller report-mappen.
+
+I dataentry henter den ut riktig data for default-form ved å bruke "currentStage.programStageDataElements" og looper gjennom programStageDataElements ved hjelp av ng-repeat på linje 13 i default-form.html. Dette er "weight", "stage" osv. 
+
+Fra linje 26 sjekker hva slags type form som skal brukes. 
+F.eks drop-down eller input. Dette kontrolleres av dataentry-controller.js. 
+
