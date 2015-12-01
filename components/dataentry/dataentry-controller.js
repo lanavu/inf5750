@@ -27,7 +27,8 @@ trackerCapture.controller('DataEntryController',
     $scope.maxOptionSize = 30;
     
     console.log("HELLO WORLD");
-    
+    console.log("Hei1");
+
     //Data entry form
     $scope.outerForm = {};
     $scope.displayCustomForm = false;
@@ -230,7 +231,8 @@ trackerCapture.controller('DataEntryController',
         $scope.selectedEnrollment = selections.selectedEnrollment;
         $scope.optionSets = selections.optionSets;
 
-        $scope.stagesById = [];
+        $scope.stagesById = []; /*Vi må bruke currentStage for å finne forrige
+        */
         if ($scope.selectedOrgUnit && $scope.selectedProgram && $scope.selectedProgram.id && $scope.selectedEntity && $scope.selectedEnrollment && $scope.selectedEnrollment.enrollment) {
             ProgramStageFactory.getByProgram($scope.selectedProgram).then(function (stages) {
                 $scope.programStages = stages;
@@ -244,6 +246,9 @@ trackerCapture.controller('DataEntryController',
                     });
 
                     $scope.stagesById[stage.id] = stage;
+                    console.log(stage + " stage");
+                    console.log($scope.stagesById[stage.id] + " Array");
+                    console.log(stage.id + " stage.id");
                     $scope.eventsByStage[stage.id] = [];
 
                     //If one of the stages has less than $scope.tableMaxNumberOfDataElements data elements, allow sorting as table:
