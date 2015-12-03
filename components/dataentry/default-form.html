@@ -2,9 +2,8 @@
     <table class="dhis2-list-table-striped" ng-if='currentEvent && !currentStage.programStageSections.length'>
         <thead>
             <tr>
-                <th ng-bind="dataElementLabel">
-                </th>
-                <th>PrevData</th>
+                <th ng-bind="dataElementLabel"> {{getPreviousEvent()}} </th>
+                <th><p ng-if="moreStages() && previousEvent">Previous report data  </p></th>
                 <th ng-bind="valueLabel">
                 </th>
                 <th ng-if="allowProvidedElsewhereExists" ng-bind="providedElsewhereLabel">
@@ -19,7 +18,10 @@
                     <span ng-show="showHelpText[prStDe.dataElement.id]" ><br>{{prStDe.dataElement.description}}</span>
                 </a>     
             </td>
-            <td>Data goes here</td><!--Må lage if-test her for å sjekke om data finnes-->
+            <td>
+              <p  ng-if="moreStages()" ng-bind="previousEvent[prStDe.dataElement.id]"></p><!--Finne currentEvent-->
+
+            </td><!--Må lage if-test her for å sjekke om data finnes-->
             <td>
                 <ng-form name="innerForm">
                     <div ng-if="prStDe.dataElement.optionSetValue">

@@ -25,7 +25,6 @@ trackerCapture.controller('DataEntryController',
                 TrackerRulesFactory) {
 
     $scope.maxOptionSize = 30;
-    console.log("Hei");
     
     //Data entry form
     $scope.outerForm = {};
@@ -209,7 +208,9 @@ trackerCapture.controller('DataEntryController',
         $scope.showDataEntryDiv = false;
         $scope.showEventCreationDiv = false;
         $scope.currentEvent = null;
+        $scope.previousEvent = null;
         $scope.currentStage = null;
+        $scope.previousEvent = null;
         $scope.currentStageEvents = null;
         $scope.totalEvents = 0;
 
@@ -233,6 +234,7 @@ trackerCapture.controller('DataEntryController',
         if ($scope.selectedOrgUnit && $scope.selectedProgram && $scope.selectedProgram.id && $scope.selectedEntity && $scope.selectedEnrollment && $scope.selectedEnrollment.enrollment) {
             ProgramStageFactory.getByProgram($scope.selectedProgram).then(function (stages) {
                 $scope.programStages = stages;
+
                 angular.forEach(stages, function (stage) {
                     if (stage.openAfterEnrollment) {
                         $scope.currentStage = stage;
@@ -249,6 +251,8 @@ trackerCapture.controller('DataEntryController',
                     if (stage.programStageDataElements.length < $scope.tableMaxNumberOfDataElements) {
                         $scope.stagesCanBeShownAsTable = true;
                     }
+
+                    
                 });
 
                 $scope.programStages = orderByFilter($scope.programStages, '-sortOrder').reverse();
@@ -264,11 +268,37 @@ trackerCapture.controller('DataEntryController',
         }
     });
 
+    /*LANA har gjort endringer her------------------------------------------*/
+    $scope.moreStages = function() {
+         //console.log($scope.eventsByStage[$scope.currentStage.id].length);
+        if($scope.eventsByStage[$scope.currentStage.id].length > 1){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    $scope.getPreviousEvent = function(){
+        var eventsInStage = $scope.eventsByStage[$scope.currentStage.id].length;
+        var counter = eventsInStage;
+        for(i=0; i< eventsInStage; i++){
+            if($scope.eventsByStage[$scope.currentStage.id][i] === $scope.currentEvent){
+                counter = i;
+            }   
+        }
+        if(counter < eventsInStage-1){
+            $scope.previousEvent = $scope.eventsByStage[$scope.currentStage.id][counter+1];
+            //console.log($scope.eventsByStage[$scope.currentStage.id][i-1]);
+        }else{
+            $scope.previousEvent = null;
+        }
+    }
+    /*til hit------------------------------------------------------*/
+
     $scope.getEvents = function () {
 
         var events = CurrentSelection.getSelectedTeiEvents();
         events = $filter('filter')(events, {program: $scope.selectedProgram.id});
-
+   
         if (angular.isObject(events)) {
             angular.forEach(events, function (dhis2Event) {
                 if (dhis2Event.enrollment === $scope.selectedEnrollment.enrollment && dhis2Event.orgUnit) {
@@ -338,6 +368,7 @@ trackerCapture.controller('DataEntryController',
 
     $scope.stageNeedsEvent = function (stage) {
 
+
         //In case the event is a table, we sould always allow adding more events(rows)
         if (stage.displayEventsInTable) {
             return true;
@@ -346,6 +377,8 @@ trackerCapture.controller('DataEntryController',
         if ($scope.eventsByStage[stage.id].length < 1) {
             return true;
         }
+            
+        
 
         if (stage.repeatable) {
             for (var j = 0; j < $scope.eventsByStage[stage.id].length; j++) {
@@ -357,6 +390,9 @@ trackerCapture.controller('DataEntryController',
         }
         return false;
     };
+
+
+
 
     $scope.showCreateEvent = function (stage) {
 
