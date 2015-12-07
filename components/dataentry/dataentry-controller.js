@@ -25,7 +25,7 @@ trackerCapture.controller('DataEntryController',
                 TrackerRulesFactory) {
 
     $scope.maxOptionSize = 30;
-    
+
     //Data entry form
     $scope.outerForm = {};
     $scope.displayCustomForm = false;
@@ -44,12 +44,12 @@ trackerCapture.controller('DataEntryController',
     $scope.warningMessages = {};
     $scope.hiddenSections = {};
     $scope.tableMaxNumberOfDataElements = 10;
-    
+
     //Labels
     $scope.dataElementLabel = $translate.instant('data_element');
     $scope.valueLabel = $translate.instant('value');
     $scope.providedElsewhereLabel = $translate.instant('provided_elsewhere');
-    
+
 
     var userProfile = SessionStorageService.get('USER_PROFILE');
     var storedBy = userProfile && userProfile.username ? userProfile.username : '';
@@ -77,7 +77,7 @@ trackerCapture.controller('DataEntryController',
         }
     });
 
-    
+
     var processRuleEffect = function(event){
         //Establish which event was affected:
         var affectedEvent = $scope.currentEvent;
@@ -94,7 +94,7 @@ trackerCapture.controller('DataEntryController',
         $scope.hiddenSections = [];
         $scope.warningMessages = [];
         $scope.errorMessages = [];
-        
+
         angular.forEach($rootScope.ruleeffects[event], function (effect) {
             if (effect.dataElement) {
                 //in the data entry controller we only care about the "hidefield", showerror and showwarning actions
@@ -123,7 +123,7 @@ trackerCapture.controller('DataEntryController',
                     }
                 } else if (effect.action === "SHOWERROR") {
                     if (effect.dataElement) {
-                        
+
                         if(effect.ineffect) {
                             $scope.errorMessages[effect.dataElement.id] = effect.content + (effect.data ? effect.data : "");
                         } else {
@@ -144,7 +144,7 @@ trackerCapture.controller('DataEntryController',
                     else {
                         $log.warn("ProgramRuleAction " + effect.id + " is of type HIDEFIELD, bot does not have a dataelement defined");
                     }
-                } else if (effect.action === "HIDESECTION"){                    
+                } else if (effect.action === "HIDESECTION"){
                     if(effect.programStageSection){
                         if(effect.ineffect){
                             $scope.hiddenSections[effect.programStageSection] = true;
@@ -167,10 +167,10 @@ trackerCapture.controller('DataEntryController',
             }
         });
     };
-    
+
     //check if field is hidden
     $scope.isHidden = function (id) {
-        //In case the field contains a value, we cant hide it. 
+        //In case the field contains a value, we cant hide it.
         //If we hid a field with a value, it would falsely seem the user was aware that the value was entered in the UI.
         if ($scope.currentEvent[id]) {
             return false;
@@ -189,7 +189,7 @@ trackerCapture.controller('DataEntryController',
             }
         }
         allSorted = orderByFilter(allSorted, '-sortingDate').reverse();
-        
+
         var evs = {all: allSorted, byStage: $scope.eventsByStageAsc};
         var flag = {debug: true, verbose: false};
         //If the events is displayed in a table, it is necessary to run the rules for all visible events.
@@ -252,18 +252,18 @@ trackerCapture.controller('DataEntryController',
                         $scope.stagesCanBeShownAsTable = true;
                     }
 
-                    
+
                 });
 
                 $scope.programStages = orderByFilter($scope.programStages, '-sortOrder').reverse();
                 if (!$scope.currentStage) {
                     $scope.currentStage = $scope.programStages[0];
                 }
-                
-                TrackerRulesFactory.getRules($scope.selectedProgram.id).then(function(rules){                    
+
+                TrackerRulesFactory.getRules($scope.selectedProgram.id).then(function(rules){
                     $scope.allProgramRules = rules;
                     $scope.getEvents();
-                });           
+                });
             });
         }
     });
@@ -271,23 +271,25 @@ trackerCapture.controller('DataEntryController',
     /*LANA har gjort endringer her------------------------------------------*/
     $scope.moreStages = function() {
          //console.log($scope.eventsByStage[$scope.currentStage.id].length);
-        if($scope.eventsByStage[$scope.currentStage.id].length > 1){
-            return true;
-        }else{
-            return false;
-        }
+        return $scope.currentStageEvents.length > 1;
     }
     $scope.getPreviousEvent = function(){
-        var eventsInStage = $scope.eventsByStage[$scope.currentStage.id].length;
+        console.log($scope);
+        var eventsInStage = $scope.currentStageEvents.length;
         var counter = eventsInStage;
         for(i=0; i< eventsInStage; i++){
-            if($scope.eventsByStage[$scope.currentStage.id][i] === $scope.currentEvent){
+            if($scope.currentStageEvents[i] === $scope.currentEvent){
                 counter = i;
-            }   
+            }
         }
         if(counter < eventsInStage-1){
-            $scope.previousEvent = $scope.eventsByStage[$scope.currentStage.id][counter+1];
+            $scope.previousEvent = $scope.currentStageEvents[counter+1];
             //console.log($scope.eventsByStage[$scope.currentStage.id][i-1]);
+        } else if ( (counter == eventsInStage-1) && // ($scope.currentStage.sortOrder === 2) ) { // visualized order; 2 means ANC Visit (2-4+)
+                    ($scope.currentStage.name === $scope.programStages[1].name) ) { // == ANC Visit (2-4+) ?
+            // TODO: change the hack later! Testing for now...
+            // connect earliest event from stage "ANC Visit (2-4+)" with "ANC 1st Visit"
+            $scope.previousEvent = $scope.eventsByStage[$scope.programStages[0].id][0];
         }else{
             $scope.previousEvent = null;
         }
@@ -298,7 +300,7 @@ trackerCapture.controller('DataEntryController',
 
         var events = CurrentSelection.getSelectedTeiEvents();
         events = $filter('filter')(events, {program: $scope.selectedProgram.id});
-   
+
         if (angular.isObject(events)) {
             angular.forEach(events, function (dhis2Event) {
                 if (dhis2Event.enrollment === $scope.selectedEnrollment.enrollment && dhis2Event.orgUnit) {
@@ -318,11 +320,11 @@ trackerCapture.controller('DataEntryController',
 
                         if (dhis2Event.eventDate) {
                             dhis2Event.eventDate = DateUtils.formatFromApiToUser(dhis2Event.eventDate);
-                            dhis2Event.sortingDate = dhis2Event.eventDate;                            
+                            dhis2Event.sortingDate = dhis2Event.eventDate;
                         }
 
                         dhis2Event.editingNotAllowed = setEventEditing(dhis2Event, eventStage);
-                        
+
                         dhis2Event.statusColor = EventUtils.getEventStatusColor(dhis2Event);
                         dhis2Event = EventUtils.processEvent(dhis2Event, eventStage, $scope.optionSets, $scope.prStDes);
                         $scope.eventsByStage[dhis2Event.programStage].push(dhis2Event);
@@ -377,8 +379,8 @@ trackerCapture.controller('DataEntryController',
         if ($scope.eventsByStage[stage.id].length < 1) {
             return true;
         }
-            
-        
+
+
 
         if (stage.repeatable) {
             for (var j = 0; j < $scope.eventsByStage[stage.id].length; j++) {
@@ -465,19 +467,19 @@ trackerCapture.controller('DataEntryController',
                 $scope.showDataEntryDiv = !$scope.showDataEntryDiv;
             }
             else {
-                $scope.currentElement = {};                
+                $scope.currentElement = {};
                 $scope.currentEvent = event;
-                
+
                 var index = -1;
                 for (var i = 0; i < $scope.eventsByStage[event.programStage].length && index === -1; i++) {
                     if ($scope.eventsByStage[event.programStage][i].event === event.event) {
                         index = i;
                     }
-                }                
+                }
                 if(index !== -1){
                     $scope.currentEvent = $scope.eventsByStage[event.programStage][index];
                 }
-                
+
                 $scope.showDataEntryDiv = true;
                 $scope.showEventCreationDiv = false;
 
@@ -495,7 +497,7 @@ trackerCapture.controller('DataEntryController',
             }
         }
     };
-    
+
     $scope.switchToEventRow = function (event) {
         if($scope.currentEvent !== event) {
             $scope.showDataEntry(event,false);
@@ -563,12 +565,12 @@ trackerCapture.controller('DataEntryController',
         });
 
         if (oldValue !== value) {
-            
+
             value = CommonUtils.formatDataValue(value, prStDe.dataElement, $scope.optionSets, 'API');
-            
+
             $scope.updateSuccess = false;
 
-            $scope.currentElement = {id: prStDe.dataElement.id, event: eventToSave.event, saved: false};            
+            $scope.currentElement = {id: prStDe.dataElement.id, event: eventToSave.event, saved: false};
 
             var ev = {event: eventToSave.event,
                 orgUnit: eventToSave.orgUnit,
@@ -661,7 +663,7 @@ trackerCapture.controller('DataEntryController',
             eventToSave.sortingDate = eventToSave.eventDate;
             $scope.invalidDate = false;
             $scope.eventDateSaved = eventToSave.event;
-            eventToSave.statusColor = EventUtils.getEventStatusColor(eventToSave); 
+            eventToSave.statusColor = EventUtils.getEventStatusColor(eventToSave);
             sortEventsByStage('UPDATE');
         });
     };
@@ -727,12 +729,12 @@ trackerCapture.controller('DataEntryController',
         }
 
         if ((type === 'LAT' || type === 'LATLNG') && $scope.outerForm.latitude.$invalid ||
-                (type === 'LNG' || type === 'LATLNG') && $scope.outerForm.longitude.$invalid) {//invalid coordinate            
+                (type === 'LNG' || type === 'LATLNG') && $scope.outerForm.longitude.$invalid) {//invalid coordinate
             return;
         }
 
         if ((type === 'LAT' || type === 'LATLNG') && $scope.currentEvent.coordinate.latitude === $scope.currentEventOriginal.coordinate.latitude ||
-                (type === 'LNG' || type === 'LATLNG') && $scope.currentEvent.coordinate.longitude === $scope.currentEventOriginal.coordinate.longitude) {//no change            
+                (type === 'LNG' || type === 'LATLNG') && $scope.currentEvent.coordinate.longitude === $scope.currentEventOriginal.coordinate.longitude) {//no change
             return;
         }
 
@@ -801,14 +803,14 @@ trackerCapture.controller('DataEntryController',
                     return 'input-success';
                 }
                 return 'form-control input-success';
-            }            
+            }
             else{
                 if(custom){
                     return 'input-error';
                 }
                 return 'form-control input-error';
-            }            
-        }  
+            }
+        }
         if(custom){
             return '';
         }
@@ -869,10 +871,10 @@ trackerCapture.controller('DataEntryController',
 
             DHIS2EventFactory.update(dhis2Event).then(function (data) {
 
-                if ($scope.currentEvent.status === 'COMPLETED') {//activiate event                    
+                if ($scope.currentEvent.status === 'COMPLETED') {//activiate event
                     $scope.currentEvent.status = 'ACTIVE';
                 }
-                else {//complete event                    
+                else {//complete event
                     $scope.currentEvent.status = 'COMPLETED';
                 }
 
@@ -902,7 +904,7 @@ trackerCapture.controller('DataEntryController',
                                     if(!$scope.eventsByStage[stage.id] || $scope.eventsByStage[stage.id] && $scope.eventsByStage[stage.id].length === 0){
                                         $scope.showCreateEvent(stage);
                                     }
-                                }                                
+                                }
                             }
                         }
                     }
@@ -938,10 +940,10 @@ trackerCapture.controller('DataEntryController',
 
             DHIS2EventFactory.update(dhis2Event).then(function (data) {
 
-                if ($scope.currentEvent.status === 'SKIPPED') {//activiate event                    
+                if ($scope.currentEvent.status === 'SKIPPED') {//activiate event
                     $scope.currentEvent.status = 'SCHEDULE';
                 }
-                else {//complete event                    
+                else {//complete event
                     $scope.currentEvent.status = 'SKIPPED';
                 }
 
@@ -1047,9 +1049,9 @@ trackerCapture.controller('DataEntryController',
                 $scope.eventFilteringRequired = $scope.eventFilteringRequired ? $scope.eventFilteringRequired : periods.length > 1;
             }
         }
-        
+
         $scope.allEventsSorted = CurrentSelection.getSelectedTeiEvents();
-        
+
         if (operation) {
 
             if (operation === 'ADD') {
@@ -1090,7 +1092,7 @@ trackerCapture.controller('DataEntryController',
                 $rootScope.$broadcast('tei-report-widget', {});
             }, 200);
         }
-        
+
         $scope.allEventsSorted = orderByFilter($scope.allEventsSorted, '-sortingDate').reverse();
     };
 
@@ -1234,7 +1236,7 @@ trackerCapture.controller('DataEntryController',
                 newEvent.event = response.response.importSummaries[0].reference;
                 $modalInstance.close(newEvent);
             }
-            else {                
+            else {
                 var dialogOptions = {
                     headerText: 'event_creation_error',
                     bodyText: response.message

@@ -9,10 +9,11 @@ trackerCapture.controller('DashboardController',
                 $timeout,
                 $filter,
                 $translate,
+                $route, // TEST: added route to eliminate ReferenceError
                 TCStorageService,
                 orderByFilter,
                 SessionStorageService,
-                TEIService, 
+                TEIService,
                 TEService,
                 MetaDataFactory,
                 EnrollmentService,
@@ -25,12 +26,12 @@ trackerCapture.controller('DashboardController',
                 ModalService,
                 AuthorityService) {
     //selections
-    $scope.selectedTeiId = ($location.search()).tei; 
-    $scope.selectedProgramId = ($location.search()).program; 
+    $scope.selectedTeiId = ($location.search()).tei;
+    $scope.selectedProgramId = ($location.search()).program;
     $scope.selectedOrgUnit = SessionStorageService.get('SELECTED_OU');
     $scope.userAuthority = AuthorityService.getUserAuthorities(SessionStorageService.get('USER_ROLES'));
-    $scope.sortedTeiIds = CurrentSelection.getSortedTeiIds();    
-    
+    $scope.sortedTeiIds = CurrentSelection.getSortedTeiIds();
+
     //Labels
     $scope.removeLabel = $translate.instant('remove');
     $scope.expandLabel = $translate.instant('expand');
@@ -42,28 +43,28 @@ trackerCapture.controller('DashboardController',
     $scope.notEnrolledLabel = $translate.instant('not_yet_enrolled_data_entry');
     $scope.stickLabel = $translate.instant('stick_right_widgets');
     $scope.unstickLabel = $translate.instant('unstick_right_widgets');
-    
+
     $scope.stickyDisabled = true;
     $scope.previousTeiExists = false;
     $scope.nextTeiExists = false;
-    
+
     if($scope.sortedTeiIds && $scope.sortedTeiIds.length > 0){
         var current = $scope.sortedTeiIds.indexOf($scope.selectedTeiId);
-        
+
         if(current !== -1){
             if($scope.sortedTeiIds.length-1 > current){
                 $scope.nextTeiExists = true;
             }
-            
+
             if(current > 0){
                 $scope.previousTeiExists = true;
             }
         }
     }
-    
-    $scope.selectedProgram;    
+
+    $scope.selectedProgram;
     $scope.selectedTei;
-    
+
     //get ouLevels
     TCStorageService.currentStore.open().done(function(){
         TCStorageService.currentStore.getAll('ouLevels').done(function(response){
@@ -71,24 +72,24 @@ trackerCapture.controller('DashboardController',
             CurrentSelection.setOuLevels(orderByFilter(ouLevels, '-level').reverse());
         });
     });
-    
-    //dashboard items   
-    var getDashboardLayout = function(){        
-        $rootScope.dashboardWidgets = [];    
+
+    //dashboard items
+    var getDashboardLayout = function(){
+        $rootScope.dashboardWidgets = [];
         $scope.widgetsChanged = [];
         $scope.dashboardStatus = [];
         $scope.dashboardWidgetsOrder = {biggerWidgets: [], smallerWidgets: []};
-        $scope.orderChanged = false;        
-        
+        $scope.orderChanged = false;
+
         DashboardLayoutService.get().then(function(response){
-            $scope.dashboardLayouts = response;            
+            $scope.dashboardLayouts = response;
             var defaultLayout = $scope.dashboardLayouts.defaultLayout['DEFAULT'];
             var selectedLayout = null;
-            if($scope.selectedProgram && $scope.selectedProgram.id){                
+            if($scope.selectedProgram && $scope.selectedProgram.id){
                 selectedLayout = $scope.dashboardLayouts.customLayout && $scope.dashboardLayouts.customLayout[$scope.selectedProgram.id] ? $scope.dashboardLayouts.customLayout[$scope.selectedProgram.id] : $scope.dashboardLayouts.defaultLayout[$scope.selectedProgram.id];
-            }            
+            }
             selectedLayout = !selectedLayout ?  defaultLayout : selectedLayout;
-            
+
             $scope.stickyDisabled = selectedLayout.stickRightSide ? !selectedLayout.stickRightSide : true;
 
             angular.forEach(selectedLayout.widgets, function(widget){
@@ -96,7 +97,7 @@ trackerCapture.controller('DashboardController',
                 $rootScope.dashboardWidgets.push( $rootScope[widget.title +'Widget'] );
                 $scope.dashboardStatus[widget.title] = angular.copy(widget);
             });
-            
+
             angular.forEach(defaultLayout.widgets, function(w){
                 if(!$scope.dashboardStatus[w.title]){
                     $rootScope[w.title +'Widget'] = w;
@@ -120,16 +121,16 @@ trackerCapture.controller('DashboardController',
                 }
                 $scope.dashboardWidgetsOrder.smallerWidgets.push(w.title);
             });
-            
+
             setWidgetsSize();
-            $scope.broadCastSelections();            
-        });        
-    };    
-    
-    var setWidgetsSize = function(){        
-        
+            $scope.broadCastSelections();
+        });
+    };
+
+    var setWidgetsSize = function(){
+
         $scope.widgetSize = {smaller: "col-sm-6 col-md-4", bigger: "col-sm-6 col-md-8"};
-        
+
         if(!$scope.hasSmaller){
             $scope.widgetSize = {smaller: "col-sm-1", bigger: "col-sm-11"};
         }
@@ -138,47 +139,47 @@ trackerCapture.controller('DashboardController',
             $scope.widgetSize = {smaller: "col-sm-11", bigger: "col-sm-1"};
         }
     };
-    
+
     var setInactiveMessage = function(){
         if($scope.selectedTei.inactive){
             setHeaderDelayMessage($translate.instant('tei_inactive_only_read'));
         }
     };
-    
+
     if($scope.selectedTeiId){
-        
+
         //get option sets
-        $scope.optionSets = [];     
-        MetaDataFactory.getAll('optionSets').then(function(optionSets){            
+        $scope.optionSets = [];
+        MetaDataFactory.getAll('optionSets').then(function(optionSets){
             angular.forEach(optionSets, function(optionSet){
                 $scope.optionSets[optionSet.id] = optionSet;
             });
-            
+
             AttributesFactory.getAll().then(function(atts){
-                
+
                 $scope.attributesById = [];
                 angular.forEach(atts, function(att){
                     $scope.attributesById[att.id] = att;
                 });
 
                 CurrentSelection.setAttributesById($scope.attributesById);
-            
+
                 //Fetch the selected entity
                 TEIService.get($scope.selectedTeiId, $scope.optionSets, $scope.attributesById).then(function(response){
                     $scope.selectedTei = response;
-                    
-                    setInactiveMessage();                   
+
+                    setInactiveMessage();
 
                     //get the entity type
-                    TEService.get($scope.selectedTei.trackedEntity).then(function(te){                    
+                    TEService.get($scope.selectedTei.trackedEntity).then(function(te){
                         $scope.trackedEntity = te;
 
                         //get enrollments for the selected tei
-                        EnrollmentService.getByEntity($scope.selectedTeiId).then(function(response){                    
+                        EnrollmentService.getByEntity($scope.selectedTeiId).then(function(response){
                             var enrollments = angular.isObject(response) && response.enrollments ? response.enrollments : [];
-                            var selectedEnrollment = null, backupSelectedEnrollment = null;                            
+                            var selectedEnrollment = null, backupSelectedEnrollment = null;
                             if(enrollments.length === 1 ){
-                                selectedEnrollment = enrollments[0];                               
+                                selectedEnrollment = enrollments[0];
                             }
                             else{
                                 if( $scope.selectedProgramId ){
@@ -192,45 +193,45 @@ trackerCapture.controller('DashboardController',
                                             }
                                         }
                                     });
-                                }                                
-                            }                            
+                                }
+                            }
                             selectedEnrollment = selectedEnrollment ? selectedEnrollment : backupSelectedEnrollment;
-                            
+
                             ProgramFactory.getAll().then(function(programs){
                                 $scope.programs = [];
-                                $scope.programNames = [];  
-                                $scope.programStageNames = [];        
+                                $scope.programNames = [];
+                                $scope.programStageNames = [];
 
                                 //get programs valid for the selected ou and tei
-                                angular.forEach(programs, function(program){                                    
+                                angular.forEach(programs, function(program){
                                     if( program.trackedEntity.id === $scope.selectedTei.trackedEntity ){
                                         $scope.programs.push(program);
                                         $scope.programNames[program.id] = {id: program.id, name: program.name};
-                                        angular.forEach(program.programStages, function(stage){                
+                                        angular.forEach(program.programStages, function(stage){
                                                 $scope.programStageNames[stage.id] = {id: stage.id, name: stage.name};
                                         });
 
                                         if($scope.selectedProgramId && program.id === $scope.selectedProgramId || selectedEnrollment && selectedEnrollment.program === program.id){
                                             $scope.selectedProgram = program;
                                         }
-                                    }                                
+                                    }
                                 });
-                                
-                                DHIS2EventFactory.getEventsByProgram($scope.selectedTeiId, null).then(function(events){                                        
+
+                                DHIS2EventFactory.getEventsByProgram($scope.selectedTeiId, null).then(function(events){
                                     //prepare selected items for broadcast
-                                    CurrentSelection.setSelectedTeiEvents(events);                                        
-                                    CurrentSelection.set({tei: $scope.selectedTei, te: $scope.trackedEntity, prs: $scope.programs, pr: $scope.selectedProgram, prNames: $scope.programNames, prStNames: $scope.programStageNames, enrollments: enrollments, selectedEnrollment: selectedEnrollment, optionSets: $scope.optionSets});                            
-                                    getDashboardLayout(); 
-                                });                    
+                                    CurrentSelection.setSelectedTeiEvents(events);
+                                    CurrentSelection.set({tei: $scope.selectedTei, te: $scope.trackedEntity, prs: $scope.programs, pr: $scope.selectedProgram, prNames: $scope.programNames, prStNames: $scope.programStageNames, enrollments: enrollments, selectedEnrollment: selectedEnrollment, optionSets: $scope.optionSets});
+                                    getDashboardLayout();
+                                });
                             });
                         });
-                    });            
-                });  
+                    });
+                });
             });
         });
     }
-    
-    
+
+
     //listen for any change to program selection
     //it is possible that such could happen during enrollment.
     $scope.$on('mainDashboard', function(event, args) {
@@ -241,23 +242,23 @@ trackerCapture.controller('DashboardController',
                 $scope.selectedProgram = pr;
             }
         });
-        
+
         $scope.applySelectedProgram();
-    }); 
-    
+    });
+
     function getCurrentDashboardLayout(){
         var widgets = [];
         $scope.hasBigger = false;
         $scope.hasSmaller = false;
         angular.forEach($rootScope.dashboardWidgets, function(widget){
-            var w = angular.copy(widget);            
+            var w = angular.copy(widget);
             if($scope.orderChanged){
                 if($scope.widgetsOrder.biggerWidgets.indexOf(w.title) !== -1){
                     $scope.hasBigger = $scope.hasBigger || w.show;
                     w.parent = 'biggerWidget';
                     w.order = $scope.widgetsOrder.biggerWidgets.indexOf(w.title);
                 }
-                
+
                 if($scope.widgetsOrder.smallerWidgets.indexOf(w.title) !== -1){
                     $scope.hasSmaller = $scope.hasSmaller || w.show;
                     w.parent = 'smallerWidget';
@@ -265,7 +266,7 @@ trackerCapture.controller('DashboardController',
                 }
             }
             widgets.push(w);
-        });        
+        });
         var layout = {};
         if($scope.selectedProgram && $scope.selectedProgram.id){
             layout[$scope.selectedProgram.id] = {widgets: widgets, program: $scope.selectedProgram.id};
@@ -275,54 +276,54 @@ trackerCapture.controller('DashboardController',
         }
         return layout;
     }
-    
+
     function saveDashboardLayout(){
-        var layout = getCurrentDashboardLayout();        
+        var layout = getCurrentDashboardLayout();
         DashboardLayoutService.saveLayout(layout, false).then(function(){
             if(!$scope.orderChanged){
                 $scope.hasSmaller = $filter('filter')($scope.dashboardWidgets, {parent: "smallerWidget", show: true}).length > 0;
-                $scope.hasBigger = $filter('filter')($scope.dashboardWidgets, {parent: "biggerWidget", show: true}).length > 0;                                
-            }                
-            setWidgetsSize();      
+                $scope.hasBigger = $filter('filter')($scope.dashboardWidgets, {parent: "biggerWidget", show: true}).length > 0;
+            }
+            setWidgetsSize();
         });
     };
-    
-    //watch for widget sorting    
-    $scope.$watch('widgetsOrder', function() {        
+
+    //watch for widget sorting
+    $scope.$watch('widgetsOrder', function() {
         if(angular.isObject($scope.widgetsOrder)){
             $scope.orderChanged = false;
             for(var i=0; i<$scope.widgetsOrder.smallerWidgets.length; i++){
                 if($scope.widgetsOrder.smallerWidgets.length === $scope.dashboardWidgetsOrder.smallerWidgets.length && $scope.widgetsOrder.smallerWidgets[i] !== $scope.dashboardWidgetsOrder.smallerWidgets[i]){
                     $scope.orderChanged = true;
                 }
-                
+
                 if($scope.widgetsOrder.smallerWidgets.length !== $scope.dashboardWidgetsOrder.smallerWidgets.length){
                     $scope.orderChanged = true;
                 }
             }
-            
+
             for(var i=0; i<$scope.widgetsOrder.biggerWidgets.length; i++){
                 if($scope.widgetsOrder.biggerWidgets.length === $scope.dashboardWidgetsOrder.biggerWidgets.length && $scope.widgetsOrder.biggerWidgets[i] !== $scope.dashboardWidgetsOrder.biggerWidgets[i]){
                     $scope.orderChanged = true;
                 }
-                
+
                 if($scope.widgetsOrder.biggerWidgets.length !== $scope.dashboardWidgetsOrder.biggerWidgets.length){
                     $scope.orderChanged = true;
                 }
             }
-            
+
             if($scope.orderChanged){
                 saveDashboardLayout();
             }
         }
     });
-    
+
     $scope.applySelectedProgram = function(){
         getDashboardLayout();
     };
-    
+
     $scope.broadCastSelections = function(tei){
-        
+
         var selections = CurrentSelection.get();
         if(tei){
             $scope.selectedTei = tei;
@@ -330,19 +331,19 @@ trackerCapture.controller('DashboardController',
         else{
             $scope.selectedTei = selections.tei;
         }
-        
+
         $scope.trackedEntity = selections.te;
         $scope.optionSets = selections.optionSets;
-        
-        CurrentSelection.set({tei: $scope.selectedTei, te: $scope.trackedEntity, prs: $scope.programs, pr: $scope.selectedProgram, prNames: $scope.programNames, prStNames: $scope.programStageNames, enrollments: selections.enrollments, selectedEnrollment: null, optionSets: $scope.optionSets});        
-        $timeout(function() { 
-            $rootScope.$broadcast('selectedItems', {programExists: $scope.programs.length > 0});            
+
+        CurrentSelection.set({tei: $scope.selectedTei, te: $scope.trackedEntity, prs: $scope.programs, pr: $scope.selectedProgram, prNames: $scope.programNames, prStNames: $scope.programStageNames, enrollments: selections.enrollments, selectedEnrollment: null, optionSets: $scope.optionSets});
+        $timeout(function() {
+            $rootScope.$broadcast('selectedItems', {programExists: $scope.programs.length > 0});
         }, 200);
-    };     
-    
+    };
+
     $scope.activiateTEI = function(){
         var st = !$scope.selectedTei.inactive || $scope.selectedTei.inactive === '' ? true : false;
-        
+
         var modalOptions = {
             closeButtonText: 'no',
             actionButtonText: 'yes',
@@ -355,33 +356,33 @@ trackerCapture.controller('DashboardController',
             $scope.selectedTei.inactive = st;
             TEIService.update($scope.selectedTei, $scope.optionSets, $scope.attributesById).then(function (data) {
                 setInactiveMessage();
-                $scope.broadCastSelections($scope.selectedTei);                
+                $scope.broadCastSelections($scope.selectedTei);
             });
-        }, function(){            
+        }, function(){
         });
     };
-    
+
     $scope.back = function(){
         $location.path('/').search({program: $scope.selectedProgramId});
         $route.reload();
     };
-    
+
     $scope.displayEnrollment = false;
     $scope.showEnrollment = function(){
         $scope.displayEnrollment = true;
     };
-    
-    $scope.removeWidget = function(widget){        
+
+    $scope.removeWidget = function(widget){
         widget.show = false;
         saveDashboardLayout();
     };
-    
+
     $scope.expandCollapse = function(widget){
         widget.expand = !widget.expand;
         saveDashboardLayout();;
     };
-    
-    $scope.saveDashboarLayoutAsDefault = function(){      
+
+    $scope.saveDashboarLayoutAsDefault = function(){
         var layout = angular.copy($scope.dashboardLayouts.defaultLayout);
         var currentLayout = getCurrentDashboardLayout();
         angular.extend(layout, currentLayout);
@@ -402,16 +403,16 @@ trackerCapture.controller('DashboardController',
             return;
         });
     };
-    
-    $scope.stickUnstick = function(){        
-        $scope.stickyDisabled = !$scope.stickyDisabled;        
-        var layout = getCurrentDashboardLayout();        
-        var layoutKey = $scope.selectedProgram && $scope.selectedProgram.id ? $scope.selectedProgram.id : 'DEFAULT';        
-        layout[layoutKey].stickRightSide = !$scope.stickyDisabled;        
+
+    $scope.stickUnstick = function(){
+        $scope.stickyDisabled = !$scope.stickyDisabled;
+        var layout = getCurrentDashboardLayout();
+        var layoutKey = $scope.selectedProgram && $scope.selectedProgram.id ? $scope.selectedProgram.id : 'DEFAULT';
+        layout[layoutKey].stickRightSide = !$scope.stickyDisabled;
         DashboardLayoutService.saveLayout(layout, false).then(function(){
-        });        
+        });
     };
-    
+
     $scope.showHideWidgets = function(){
         var modalInstance = $modal.open({
             templateUrl: "components/dashboard/dashboard-widgets.html",
@@ -421,21 +422,21 @@ trackerCapture.controller('DashboardController',
         modalInstance.result.then(function () {
         });
     };
-    
+
     $rootScope.closeOpenWidget = function(widget){
         saveDashboardLayout();
     };
-    
+
     $scope.fetchTei = function(mode){
         var current = $scope.sortedTeiIds.indexOf($scope.selectedTeiId);
         var pr = ($location.search()).program;
         var tei = null;
-        if(mode === 'NEXT'){            
+        if(mode === 'NEXT'){
             tei = $scope.sortedTeiIds[current+1];
         }
-        else{            
+        else{
             tei = $scope.sortedTeiIds[current-1];
-        }        
+        }
         $location.path('/dashboard').search({tei: tei, program: pr ? pr: null});
     };
 });
