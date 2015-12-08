@@ -270,11 +270,10 @@ trackerCapture.controller('DataEntryController',
 
     /*LANA har gjort endringer her------------------------------------------*/
     $scope.moreStages = function() {
-         //console.log($scope.eventsByStage[$scope.currentStage.id].length);
-        return $scope.currentStageEvents.length > 1;
+        return $scope.currentStageEvents.length > 1 || $scope.currentStage.sortOrder == 2;
     }
     $scope.getPreviousEvent = function(){
-        console.log($scope);
+        //console.log($scope);
         var eventsInStage = $scope.currentStageEvents.length;
         var counter = eventsInStage;
         for(i=0; i< eventsInStage; i++){
@@ -284,10 +283,7 @@ trackerCapture.controller('DataEntryController',
         }
         if(counter < eventsInStage-1){
             $scope.previousEvent = $scope.currentStageEvents[counter+1];
-            //console.log($scope.eventsByStage[$scope.currentStage.id][i-1]);
-        } else if ( (counter == eventsInStage-1) && // ($scope.currentStage.sortOrder === 2) ) { // visualized order; 2 means ANC Visit (2-4+)
-                    ($scope.currentStage.name === $scope.programStages[1].name) ) { // == ANC Visit (2-4+) ?
-            // TODO: change the hack later! Testing for now...
+        } else if ( (counter == eventsInStage-1) && ($scope.currentStage.sortOrder === 2) ) { // visualized order; 2 means ANC Visit (2-4+)
             // connect earliest event from stage "ANC Visit (2-4+)" with "ANC 1st Visit"
             $scope.previousEvent = $scope.eventsByStage[$scope.programStages[0].id][0];
         }else{
