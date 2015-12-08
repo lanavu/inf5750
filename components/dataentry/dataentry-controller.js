@@ -208,7 +208,6 @@ trackerCapture.controller('DataEntryController',
         $scope.showDataEntryDiv = false;
         $scope.showEventCreationDiv = false;
         $scope.currentEvent = null;
-        $scope.previousEvent = null;
         $scope.currentStage = null;
         $scope.previousEvent = null;
         $scope.currentStageEvents = null;
@@ -273,6 +272,7 @@ trackerCapture.controller('DataEntryController',
          //console.log($scope.eventsByStage[$scope.currentStage.id].length);
         return $scope.currentStageEvents.length > 1;
     }
+    
     $scope.getPreviousEvent = function(){
         console.log($scope);
         var eventsInStage = $scope.currentStageEvents.length;
