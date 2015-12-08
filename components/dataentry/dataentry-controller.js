@@ -296,6 +296,26 @@ trackerCapture.controller('DataEntryController',
     }
     /*til hit------------------------------------------------------*/
 
+    
+    $scope.findDiff = function(){
+        console.log();
+        var result = 0;
+        var len = currentEvent[prStDe.dataElement.id].length;
+        
+        for(int i = 0; i < 4; i++){
+            var prev = previousEvent[prStDe.dataElement.id];
+            var curr = currentEvent[prStDe.dataElement.id];
+            result = prev - curr;
+            
+            if(result < 0){
+                return result*(-1);
+            }else if(result > 0){
+                return result;
+            }
+        }
+    }
+    
+    
     $scope.getEvents = function () {
 
         var events = CurrentSelection.getSelectedTeiEvents();
