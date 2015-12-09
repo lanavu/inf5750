@@ -210,7 +210,7 @@ trackerCapture.controller('DataEntryController',
         $scope.currentEvent = null;
         $scope.previousEvent = null;
         $scope.currentStage = null;
-        $scope.previousEvent = null;
+        //$scope.previousEvent = null;
         $scope.currentStageEvents = null;
         $scope.totalEvents = 0;
 
@@ -296,23 +296,22 @@ trackerCapture.controller('DataEntryController',
     }
     /*til hit------------------------------------------------------*/
 
-    
+/* Saliq */    
     $scope.findDiff = function(){
         console.log();
         var result = 0;
-        //var len = currentEvent[prStDe.dataElement.id].length;
         
-        for(var i = 0; i < 4; i++){
-            var prev = previousEvent[prStDe.dataElement.id];
-            var curr = currentEvent[prStDe.dataElement.id];
-            result = prev - curr;
-            
-            if(result < 0){
-                return result*(-1);
-            }else if(result > 0){
-                return result;
-            }
+        var prev = previousEvent[prStDe.dataElement.id];
+        var curr = currentEvent[prStDe.dataElement.id];
+        result = curr - prev;
+
+
+        if(result < 0){
+            return result*(-1);
+        }else if(result > 0){
+            return result;
         }
+            
     }
     
     
