@@ -300,9 +300,9 @@ trackerCapture.controller('DataEntryController',
     $scope.findDiff = function(){
         console.log();
         var result = 0;
-        var len = currentEvent[prStDe.dataElement.id].length;
+        //var len = currentEvent[prStDe.dataElement.id].length;
         
-        for(int i = 0; i < 4; i++){
+        for(var i = 0; i < 4; i++){
             var prev = previousEvent[prStDe.dataElement.id];
             var curr = currentEvent[prStDe.dataElement.id];
             result = prev - curr;

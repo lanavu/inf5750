@@ -24,7 +24,7 @@
             </td><!--Må lage if-test her for å sjekke om data finnes-->
             
             <td><!--Finne currentEvent-->
-                <p  ng-if="moreStages()" ng-bind="previousEvent[prStDe.dataElement.id] + currentEvent[prStDe.dataElement.id]"></p>
+                <p  ng-if="moreStages()" ng-bind="previousEvent[prStDe.dataElement.id] - currentEvent[prStDe.dataElement.id]"></p>
                 
             </td>
             
