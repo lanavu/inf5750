@@ -5,18 +5,20 @@
                 <th ng-bind="dataElementLabel"> {{getPreviousEvent()}} </th>
                 <th>
 
-                <p ng-if="moreStages() && previousEvent">
-                Previous report data 
-                  <br>
-                  <select name="dateSelect" id="dateSelect" ng-model="data.dateSelect">
-                    <option value="">---Choose date---</option> <!-- not selected / blank option -->  
-                    <option ng-repeat="option in currentStageEvents" value="{{option}}">{{option.eventDate}}
-                    </option>
-                  </select>
-                  <br>
-                              
+                  <p ng-if="moreStages() && previousEvent">
+                    Previous report data 
 
-                </p></th>
+                    <!-- Fungerer ikke uten denne, WTF? -->
+                    <p></p>
+
+                    <select name="singleSelect" ng-model="selectedPrev">
+                      <option value="">Choose Date</option>
+                      <option ng-repeat="option in currentStageEvents | filter: dateOlder" 
+                              value="{{$index}}">{{option.eventDate}}</option>
+                    </select> 
+
+                  </p>
+                </th>
 
                 <th ng-bind="valueLabel">
                 </th>
@@ -33,7 +35,15 @@
                 </a>
             </td>
             <td>
-              <p  ng-if="moreStages()" ng-bind="previousEvent[prStDe.dataElement.id]"></p><!--Finne currentEvent-->
+
+              <!-- Vis forrige dersom en finnes og ingen annen er valgt -->
+               <p ng-if="moreStages() && !selectedPrev" 
+                  ng-bind="previousEvent[prStDe.dataElement.id]"></p>
+              <!-- Vis valgt event dersom en er valgt -->
+               <p ng-if="moreStages() && selectedPrev">
+                  {{ currentStageEvents[selectedPrev][prStDe.dataElement.id] }}
+                </p>
+
 
             </td><!--Må lage if-test her for å sjekke om data finnes-->
             <td>
