@@ -3,9 +3,19 @@
         <thead>
             <tr>
                 <th ng-bind="dataElementLabel"> {{getPreviousEvent()}} </th>
-                <th><p ng-if="moreStages() && previousEvent">Previous report data  </p></th>
-                <th><p ng-if="moreStages() && findDiff() && result">Difference +/- </p></th>
-                </th>
+                <th>
+                <p ng-if="moreStages() && previousEvent">
+                Previous report data 
+                  <br>
+                  <select name="dateSelect" id="dateSelect" ng-model="data.dateSelect">
+                    <option value="">---Choose date---</option> <!-- not selected / blank option -->  
+                    <option ng-repeat="option in currentStageEvents" value="{{option}}">{{option.eventDate}}
+                    </option>
+                  </select>
+                  <br>
+                </p></th>
+
+                <th><p ng-if="moreStages() && result"> {{findDiff()}}Difference +/- </p></th>
                 <th ng-if="allowProvidedElsewhereExists" ng-bind="providedElsewhereLabel">
                 </th>
             </tr>
@@ -23,7 +33,7 @@
             </td>
             
             <td><!-- difference -->
-                <p  ng-if="moreStages()" ng-bind="result[prStDe.dataElement.id]"></p>
+                <p  ng-if="moreStages()" ng-bind="result[prStDe.dataElement.id]"><i class="fa fa-caret-down"></i></p>
             </td>
             
             <td>

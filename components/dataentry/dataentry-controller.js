@@ -210,10 +210,9 @@ trackerCapture.controller('DataEntryController',
         $scope.currentEvent = null;
         $scope.previousEvent = null;
         $scope.currentStage = null;
-        //$scope.previousEvent = null;
         $scope.currentStageEvents = null;
         $scope.totalEvents = 0;
-        $scope.result = []; // saliq tuller
+        $scope.result = []; // used to store differences in events
 
         $scope.allowEventCreation = false;
         $scope.repeatableStages = [];
@@ -297,7 +296,7 @@ trackerCapture.controller('DataEntryController',
     }
     /*til hit------------------------------------------------------*/
 
-/* Saliq */    
+/* Saliq*/    
     $scope.findDiff = function(){
         for (var i = 0; i < $scope.currentStage.programStageDataElements.length; i++) {
             var prStDe = $scope.currentStage.programStageDataElements[i]; 
