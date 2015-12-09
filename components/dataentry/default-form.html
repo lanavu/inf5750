@@ -4,8 +4,7 @@
             <tr>
                 <th ng-bind="dataElementLabel"> {{getPreviousEvent()}} </th>
                 <th><p ng-if="moreStages() && previousEvent">Previous report data  </p></th>
-                <th><p ng-if="moreStages() && findDiff">Difference +/- </p></th>
-                <th ng-bind="valueLabel">
+                <th><p ng-if="moreStages() && findDiff() && result">Difference +/- </p></th>
                 </th>
                 <th ng-if="allowProvidedElsewhereExists" ng-bind="providedElsewhereLabel">
                 </th>
@@ -19,13 +18,12 @@
                     <span ng-show="showHelpText[prStDe.dataElement.id]" ><br>{{prStDe.dataElement.description}}</span>
                 </a>
             </td>
-            <td>
-              <p  ng-if="moreStages()" ng-bind="previousEvent[prStDe.dataElement.id]"></p><!--Finne currentEvent-->
-            </td><!--Må lage if-test her for å sjekke om data finnes-->
+            <td><!-- previous data -->
+              <p  ng-if="moreStages()" ng-bind="previousEvent[prStDe.dataElement.id]"></p>
+            </td>
             
-            <td><!--Finne currentEvent-->
-                <p  ng-if="moreStages()" ng-bind="previousEvent[prStDe.dataElement.id] - currentEvent[prStDe.dataElement.id]"></p>
-                
+            <td><!-- difference -->
+                <p  ng-if="moreStages()" ng-bind="result[prStDe.dataElement.id]"></p>
             </td>
             
             <td>

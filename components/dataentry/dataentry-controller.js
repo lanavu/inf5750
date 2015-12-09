@@ -213,6 +213,7 @@ trackerCapture.controller('DataEntryController',
         //$scope.previousEvent = null;
         $scope.currentStageEvents = null;
         $scope.totalEvents = 0;
+        $scope.result = []; // saliq tuller
 
         $scope.allowEventCreation = false;
         $scope.repeatableStages = [];
@@ -274,7 +275,7 @@ trackerCapture.controller('DataEntryController',
         return $scope.currentStageEvents.length > 1;
     }
     $scope.getPreviousEvent = function(){
-        console.log($scope);
+        //console.log($scope);
         var eventsInStage = $scope.currentStageEvents.length;
         var counter = eventsInStage;
         for(i=0; i< eventsInStage; i++){
@@ -298,20 +299,15 @@ trackerCapture.controller('DataEntryController',
 
 /* Saliq */    
     $scope.findDiff = function(){
-        console.log();
-        var result = 0;
-        
-        var prev = previousEvent[prStDe.dataElement.id];
-        var curr = currentEvent[prStDe.dataElement.id];
-        result = curr - prev;
-
-
-        if(result < 0){
-            return result*(-1);
-        }else if(result > 0){
-            return result;
+        for (var i = 0; i < $scope.currentStage.programStageDataElements.length; i++) {
+            var prStDe = $scope.currentStage.programStageDataElements[i]; 
+            var tmp = $scope.currentEvent[prStDe.dataElement.id] - $scope.previousEvent[prStDe.dataElement.id];
+            if (isFinite(tmp)) {
+                $scope.result[prStDe.dataElement.id] = tmp;
+            } else {
+                $scope.result[prStDe.dataElement.id] = "~";
+            }
         }
-            
     }
     
     
