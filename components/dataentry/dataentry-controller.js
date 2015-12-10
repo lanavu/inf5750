@@ -50,7 +50,6 @@ trackerCapture.controller('DataEntryController',
     $scope.valueLabel = $translate.instant('value');
     $scope.providedElsewhereLabel = $translate.instant('provided_elsewhere');
 
-
     var userProfile = SessionStorageService.get('USER_PROFILE');
     var storedBy = userProfile && userProfile.username ? userProfile.username : '';
 
@@ -271,7 +270,11 @@ trackerCapture.controller('DataEntryController',
     $scope.moreStages = function() {
         return $scope.currentStageEvents.length > 1 || $scope.currentStage.sortOrder == 2;
     }
-    
+
+    $scope.dateOlder = function(item) {
+    	return item.eventDate < $scope.currentEvent.eventDate;
+    }
+
     $scope.getPreviousEvent = function(){
         //console.log($scope);
         var eventsInStage = $scope.currentStageEvents.length;
