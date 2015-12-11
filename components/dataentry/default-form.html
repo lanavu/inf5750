@@ -3,18 +3,20 @@
         <thead>
             <tr>
                 <th ng-bind="dataElementLabel"> {{getPreviousEvent()}} </th>
-                <th>
-                <p ng-if="moreStages() && previousEvent">
-                Previous report data 
-                  <br>
-                  <select name="dateSelect" id="dateSelect" ng-model="data.dateSelect">
-                    <option value="">---Choose date---</option> <!-- not selected / blank option -->  
-                    <option ng-repeat="option in currentStageEvents" value="{{option}}">{{option.eventDate}}
-                    </option>
-                  </select>
-                  <br>
-                </p></th>
+                  <p ng-if="moreStages() && previousEvent">
+                    Previous report data 
 
+                    <!-- Fungerer ikke uten denne, WTF? -->
+                    <p></p>
+
+                    <select name="singleSelect" ng-model="selectedPrev">
+                      <option value="">Choose Date</option>
+                      <option ng-repeat="option in currentStageEvents | filter: dateOlder" 
+                              value="{{$index}}">{{option.eventDate}}</option>
+                    </select> 
+
+                  </p>
+                </th>
                 <th><p ng-if="moreStages() && result"> {{findDiff()}}Difference +/- </p></th>
                 <th ng-if="allowProvidedElsewhereExists" ng-bind="providedElsewhereLabel">
                 </th>
@@ -28,14 +30,15 @@
                     <span ng-show="showHelpText[prStDe.dataElement.id]" ><br>{{prStDe.dataElement.description}}</span>
                 </a>
             </td>
-            <td><!-- previous data -->
-              <p  ng-if="moreStages()" ng-bind="previousEvent[prStDe.dataElement.id]"></p>
-            </td>
-            
-            <td><!-- difference -->
-                <p  ng-if="moreStages()" ng-bind="result[prStDe.dataElement.id]"><i class="fa fa-caret-down"></i></p>
-            </td>
-            
+            <td>
+              <!-- Vis forrige dersom en finnes og ingen annen er valgt -->
+               <p ng-if="moreStages() && !selectedPrev" 
+                  ng-bind="previousEvent[prStDe.dataElement.id]"></p>
+              <!-- Vis valgt event dersom en er valgt -->
+               <p ng-if="moreStages() && selectedPrev">
+                  {{ currentStageEvents[selectedPrev][prStDe.dataElement.id] }}
+                </p>
+            </td><!--Må lage if-test her for å sjekke om data finnes-->
             <td>
                 <ng-form name="innerForm">
                     <div ng-if="prStDe.dataElement.optionSetValue">

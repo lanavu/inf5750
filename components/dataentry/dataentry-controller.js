@@ -48,6 +48,7 @@ trackerCapture.controller('DataEntryController',
     //Labels
     $scope.dataElementLabel = $translate.instant('data_element');
     $scope.valueLabel = $translate.instant('value');
+    $scope.diffLabel = $translate.instant('Difference +/-');
     $scope.providedElsewhereLabel = $translate.instant('provided_elsewhere');
 
 
