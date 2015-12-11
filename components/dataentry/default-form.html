@@ -3,21 +3,27 @@
         <thead>
             <tr>
                 <th ng-bind="dataElementLabel"> {{getPreviousEvent()}} </th>
+
+                <th>
                   <p ng-if="moreStages() && previousEvent">
-                    Previous report data 
+                    Previous report data
 
                     <!-- Fungerer ikke uten denne, WTF? -->
                     <p></p>
 
                     <select name="singleSelect" ng-model="selectedPrev">
                       <option value="">Choose Date</option>
-                      <option ng-repeat="option in currentStageEvents | filter: dateOlder" 
+                      <option ng-repeat="option in currentStageEvents | filter: dateOlder"
                               value="{{$index}}">{{option.eventDate}}</option>
-                    </select> 
+                    </select>
 
                   </p>
                 </th>
-                <th><p ng-if="moreStages() && result"> {{findDiff()}}Difference +/- </p></th>
+
+                <th>
+                  <p ng-if="moreStages() && previousEvent" ng-bind="diffLabel"> {{ findDiff() }}</p>
+                </th>
+
                 <th ng-if="allowProvidedElsewhereExists" ng-bind="providedElsewhereLabel">
                 </th>
             </tr>
@@ -32,13 +38,16 @@
             </td>
             <td>
               <!-- Vis forrige dersom en finnes og ingen annen er valgt -->
-               <p ng-if="moreStages() && !selectedPrev" 
+               <p ng-if="moreStages() && !selectedPrev"
                   ng-bind="previousEvent[prStDe.dataElement.id]"></p>
               <!-- Vis valgt event dersom en er valgt -->
                <p ng-if="moreStages() && selectedPrev">
                   {{ currentStageEvents[selectedPrev][prStDe.dataElement.id] }}
                 </p>
-            </td><!--Må lage if-test her for å sjekke om data finnes-->
+            </td>
+            <td>
+              <p ng-if="moreStages() && previousEvent" ng-bind="result[prStDe.dataElement.id]"></p>
+            </td>
             <td>
                 <ng-form name="innerForm">
                     <div ng-if="prStDe.dataElement.optionSetValue">
