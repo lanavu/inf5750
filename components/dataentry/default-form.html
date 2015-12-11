@@ -3,8 +3,8 @@
         <thead>
             <tr>
                 <th ng-bind="dataElementLabel"> {{getPreviousEvent()}} </th>
-                <th>
 
+                <th>
                   <p ng-if="moreStages() && previousEvent">
                     Previous report data
 
@@ -20,8 +20,10 @@
                   </p>
                 </th>
 
-                <th ng-bind="valueLabel">
+                <th>
+                  <p ng-if="moreStages() && previousEvent" ng-bind="diffLabel"> {{ findDiff() }}</p>
                 </th>
+
                 <th ng-if="allowProvidedElsewhereExists" ng-bind="providedElsewhereLabel">
                 </th>
             </tr>
@@ -42,6 +44,9 @@
                <p ng-if="moreStages() && selectedPrev">
                   {{ currentStageEvents[selectedPrev][prStDe.dataElement.id] }}
                 </p>
+            </td>
+            <td>
+              <p ng-if="moreStages() && previousEvent" ng-bind="result[prStDe.dataElement.id]"></p>
             </td>
             <td>
                 <ng-form name="innerForm">

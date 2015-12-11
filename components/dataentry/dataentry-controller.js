@@ -48,7 +48,9 @@ trackerCapture.controller('DataEntryController',
     //Labels
     $scope.dataElementLabel = $translate.instant('data_element');
     $scope.valueLabel = $translate.instant('value');
+    $scope.diffLabel = $translate.instant('Difference +/-');
     $scope.providedElsewhereLabel = $translate.instant('provided_elsewhere');
+
 
     var userProfile = SessionStorageService.get('USER_PROFILE');
     var storedBy = userProfile && userProfile.username ? userProfile.username : '';
@@ -207,10 +209,11 @@ trackerCapture.controller('DataEntryController',
         $scope.showDataEntryDiv = false;
         $scope.showEventCreationDiv = false;
         $scope.currentEvent = null;
-        $scope.currentStage = null;
         $scope.previousEvent = null;
+        $scope.currentStage = null;
         $scope.currentStageEvents = null;
         $scope.totalEvents = 0;
+        $scope.result = []; // used to store differences in events
 
         $scope.allowEventCreation = false;
         $scope.repeatableStages = [];
@@ -276,7 +279,6 @@ trackerCapture.controller('DataEntryController',
     }
 
     $scope.getPreviousEvent = function(){
-        //console.log($scope);
         var eventsInStage = $scope.currentStageEvents.length;
         var counter = eventsInStage;
         for(i=0; i< eventsInStage; i++){
@@ -294,6 +296,20 @@ trackerCapture.controller('DataEntryController',
         }
     }
     /*til hit------------------------------------------------------*/
+
+/* Saliq*/
+    $scope.findDiff = function(){
+        for (var i = 0; i < $scope.currentStage.programStageDataElements.length; i++) {
+            var prStDe = $scope.currentStage.programStageDataElements[i];
+            var tmp = $scope.currentEvent[prStDe.dataElement.id] - $scope.previousEvent[prStDe.dataElement.id];
+            if (isFinite(tmp)) {
+                $scope.result[prStDe.dataElement.id] = tmp;
+            } else {
+                $scope.result[prStDe.dataElement.id] = "~";
+            }
+        }
+    }
+
 
     $scope.getEvents = function () {
 
