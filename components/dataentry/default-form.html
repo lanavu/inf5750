@@ -15,6 +15,8 @@
                       <option value="">Choose Date</option>
                       <option ng-repeat="option in currentStageEvents | filter: dateOlder"
                               value="{{$index}}">{{option.eventDate}}</option>
+                      <option ng-if="currentStage.sortOrder == 2"
+                              value="{{$index}}"> {{ eventsByStage[programStages[0].id][0].eventDate }} </option>
                     </select>
 
                   </p>
@@ -41,9 +43,12 @@
                <p ng-if="moreStages() && !selectedPrev"
                   ng-bind="previousEvent[prStDe.dataElement.id]"></p>
               <!-- Vis valgt event dersom en er valgt -->
-               <p ng-if="moreStages() && selectedPrev">
+               <p ng-if="moreStages() && selectedPrev && currentStage.sortOrder != 2">
                   {{ currentStageEvents[selectedPrev][prStDe.dataElement.id] }}
                 </p>
+               <p ng-if="moreStages() && selectedPrev && currentStage.sortOrder == 2">
+                   {{ eventsByStage[programStages[0].id][0][prStDe.dataElement.id] }}
+                 </p>
             </td>
             <td>
               <p ng-if="moreStages() && previousEvent" ng-bind="result[prStDe.dataElement.id]"></p>
