@@ -288,7 +288,7 @@ trackerCapture.controller('DataEntryController',
         }
         if(counter < eventsInStage-1){
             $scope.previousEvent = $scope.currentStageEvents[counter+1];
-        } else if ( (counter == eventsInStage-1) && ($scope.currentStage.sortOrder === 2) ) { // visualized order; 2 means ANC Visit (2-4+)
+        } else if ( (counter === eventsInStage-1) && ($scope.currentStage.sortOrder === 2) ) { // visualized order; 2 means ANC Visit (2-4+)
             // connect earliest event from stage "ANC Visit (2-4+)" with "ANC 1st Visit"
             $scope.previousEvent = $scope.eventsByStage[$scope.programStages[0].id][0];
         }else{
@@ -310,6 +310,13 @@ trackerCapture.controller('DataEntryController',
         }
     }
 
+    $scope.getRelevantEvents = function() {
+        if ($scope.currentStage.sortOrder === 2) {
+            return $scope.currentStageEvents.concat($scope.eventsByStage[$scope.programStages[0].id][0]);
+        } else {
+            return $scope.currentStageEvents;
+        }
+    }
 
     $scope.getEvents = function () {
 

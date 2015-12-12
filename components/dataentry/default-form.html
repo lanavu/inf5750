@@ -8,12 +8,8 @@
                   <p ng-if="moreEvents() && previousEvent">Previous report data</p>
                   <p>
                     <select name="singleSelect" ng-model="selectedPrev"
-                            ng-options="e.eventDate for e in currentStageEvents | filter: dateOlder track by e.event">
+                            ng-options="e.eventDate for e in getRelevantEvents() | filter: dateOlder track by e.event">
                       <option value="">Choose Date</option>
-                      <!--option ng-if="currentStage.sortOrder == 2"
-                              value="{{eventsByStage[programStages[0].id][0]}}">
-                        {{ eventsByStage[programStages[0].id][0].eventDate }}
-                      </option-->
                     </select>
                   </p>
                 </th>
@@ -44,15 +40,6 @@
               <p ng-if="moreEvents() && selectedPrev">
                 {{ selectedPrev[prStDe.dataElement.id] }}
                </p>
-               <!--p ng-if="moreEvents() && selectedPrev">
-                  {{ currentStageEvents[selectedPrev+1][prStDe.dataElement.id] }}
-               </p>
-               <p ng-if="moreEvents() && selectedPrev > -1 && currentStage.sortOrder == 2">
-                    {{ currentStageEvents[selectedPrev][prStDe.dataElement.id] }}
-               </p>
-               <p ng-if="moreEvents() && selectedPrev == -1">
-                   {{ eventsByStage[programStages[0].id][0][prStDe.dataElement.id] }}
-               </p-->
             </td>
             <td>
               <p ng-if="moreEvents() && previousEvent" ng-bind="result[prStDe.dataElement.id]"></p>
