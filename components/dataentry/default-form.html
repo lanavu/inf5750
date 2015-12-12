@@ -7,7 +7,7 @@
                 <th ng-if="moreEvents() && previousEvent">
                   <p>Previous report data</p>
                   <p>
-                    <select name="singleSelect" ng-model="selectedPrev"
+                    <select name="singleSelect" ng-model="$parent.selectedPrev"
                             ng-options="e.eventDate for e in getRelevantEvents() | filter: dateOlder track by e.event">
                       <option value="">{{ previousEvent.eventDate }}</option>
                     </select>
