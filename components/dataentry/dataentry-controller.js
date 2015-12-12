@@ -270,7 +270,7 @@ trackerCapture.controller('DataEntryController',
     });
 
     /*LANA har gjort endringer her------------------------------------------*/
-    $scope.moreStages = function() {
+    $scope.moreEvents = function() {
         return $scope.currentStageEvents.length > 1 || $scope.currentStage.sortOrder == 2;
     }
 
@@ -298,10 +298,10 @@ trackerCapture.controller('DataEntryController',
     /*til hit------------------------------------------------------*/
 
 /* Saliq*/
-    $scope.findDiff = function(){
+    $scope.findDiff = function(prev){
         for (var i = 0; i < $scope.currentStage.programStageDataElements.length; i++) {
             var prStDe = $scope.currentStage.programStageDataElements[i];
-            var tmp = $scope.currentEvent[prStDe.dataElement.id] - $scope.previousEvent[prStDe.dataElement.id];
+            var tmp = $scope.currentEvent[prStDe.dataElement.id] - prev[prStDe.dataElement.id];
             if (isFinite(tmp)) {
                 $scope.result[prStDe.dataElement.id] = tmp;
             } else {

@@ -5,24 +5,22 @@
                 <th ng-bind="dataElementLabel"> {{getPreviousEvent()}} </th>
 
                 <th>
-                  <p ng-if="moreStages() && previousEvent">
-                    Previous report data
-
-                    <!-- Fungerer ikke uten denne, WTF? -->
-                    <p></p>
-
+                  <p ng-if="moreEvents() && previousEvent">Previous report data</p>
+                  <p>
                     <select name="singleSelect" ng-model="selectedPrev"
                             ng-options="e.eventDate for e in currentStageEvents | filter: dateOlder track by e.event">
                       <option value="">Choose Date</option>
                       <!--option ng-if="currentStage.sortOrder == 2"
-                              value="-1"> {{ eventsByStage[programStages[0].id][0].eventDate }} </option-->
+                              value="{{eventsByStage[programStages[0].id][0]}}">
+                        {{ eventsByStage[programStages[0].id][0].eventDate }}
+                      </option-->
                     </select>
-
                   </p>
                 </th>
 
                 <th>
-                  <p ng-if="moreStages() && previousEvent" ng-bind="diffLabel"> {{ findDiff() }}</p>
+                  <p ng-if="moreEvents() && previousEvent && !selectedPrev" ng-bind="diffLabel">{{ findDiff(previousEvent) }}</p>
+                  <p ng-if="moreEvents() && selectedPrev" ng-bind="diffLabel">{{ findDiff(selectedPrev) }}</p>
                 </th>
 
                 <th ng-if="allowProvidedElsewhereExists" ng-bind="providedElsewhereLabel">
@@ -39,25 +37,25 @@
             </td>
             <td>
               <!-- Vis forrige dersom en finnes og ingen annen er valgt -->
-              <p ng-if="moreStages() && !selectedPrev">
+              <p ng-if="moreEvents() && !selectedPrev">
                 {{ previousEvent[prStDe.dataElement.id] }}
               </p>
               <!-- Vis valgt event dersom en er valgt -->
-              <p ng-if="moreStages() && selectedPrev">
+              <p ng-if="moreEvents() && selectedPrev">
                 {{ selectedPrev[prStDe.dataElement.id] }}
                </p>
-               <!--p ng-if="moreStages() && selectedPrev">
+               <!--p ng-if="moreEvents() && selectedPrev">
                   {{ currentStageEvents[selectedPrev+1][prStDe.dataElement.id] }}
                </p>
-               <p ng-if="moreStages() && selectedPrev > -1 && currentStage.sortOrder == 2">
+               <p ng-if="moreEvents() && selectedPrev > -1 && currentStage.sortOrder == 2">
                     {{ currentStageEvents[selectedPrev][prStDe.dataElement.id] }}
                </p>
-               <p ng-if="moreStages() && selectedPrev == -1">
+               <p ng-if="moreEvents() && selectedPrev == -1">
                    {{ eventsByStage[programStages[0].id][0][prStDe.dataElement.id] }}
                </p-->
             </td>
             <td>
-              <p ng-if="moreStages() && previousEvent" ng-bind="result[prStDe.dataElement.id]"></p>
+              <p ng-if="moreEvents() && previousEvent" ng-bind="result[prStDe.dataElement.id]"></p>
             </td>
             <td>
                 <ng-form name="innerForm">
