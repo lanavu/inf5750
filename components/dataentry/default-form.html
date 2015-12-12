@@ -4,12 +4,12 @@
             <tr>
                 <th ng-bind="dataElementLabel"> {{getPreviousEvent()}} </th>
 
-                <th>
-                  <p ng-if="moreEvents() && previousEvent">Previous report data</p>
+                <th ng-if="moreEvents() && previousEvent">
+                  <p>Previous report data</p>
                   <p>
                     <select name="singleSelect" ng-model="selectedPrev"
                             ng-options="e.eventDate for e in getRelevantEvents() | filter: dateOlder track by e.event">
-                      <option value="">Choose Date</option>
+                      <option value="">{{ previousEvent.eventDate }}</option>
                     </select>
                   </p>
                 </th>

@@ -275,7 +275,7 @@ trackerCapture.controller('DataEntryController',
     }
 
     $scope.dateOlder = function(item) {
-    	return item.eventDate < $scope.currentEvent.eventDate;
+    	return item.eventDate < $scope.previousEvent.eventDate;
     }
 
     $scope.getPreviousEvent = function(){
