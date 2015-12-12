@@ -14,9 +14,9 @@
                   </p>
                 </th>
 
-                <th>
-                  <p ng-if="moreEvents() && previousEvent && !selectedPrev" ng-bind="diffLabel">{{ findDiff(previousEvent) }}</p>
-                  <p ng-if="moreEvents() && selectedPrev" ng-bind="diffLabel">{{ findDiff(selectedPrev) }}</p>
+                <th ng-if="moreEvents() && previousEvent" ng-bind="diffLabel">
+                  <p ng-if="!selectedPrev">{{ findDiff(previousEvent) }}</p>
+                  <p ng-if="selectedPrev">{{ findDiff(selectedPrev) }}</p>
                 </th>
 
                 <th ng-if="allowProvidedElsewhereExists" ng-bind="providedElsewhereLabel">
@@ -39,7 +39,7 @@
               <!-- Vis valgt event dersom en er valgt -->
               <p ng-if="moreEvents() && selectedPrev">
                 {{ selectedPrev[prStDe.dataElement.id] }}
-               </p>
+              </p>
             </td>
             <td>
               <p ng-if="moreEvents() && previousEvent" ng-bind="result[prStDe.dataElement.id]"></p>
